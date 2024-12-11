@@ -8,6 +8,7 @@ import random
 import glob
 import csv
 from plyfile import PlyData, PlyElement
+import open3d as o3d
 from torch_geometric.data import Data, extract_zip, Dataset
 from torch_geometric.data.dataset import files_exist
 from torch_geometric.data import DataLoader
@@ -26,7 +27,7 @@ from torch_points3d.core.data_transform import GridSampling3D, CylinderSampling,
 from torch_points3d.datasets.change_detection.base_siamese_dataset import BaseSiameseDataset
 from torch_points3d.datasets.change_detection.pair import Pair, MultiScalePair
 from torch_points3d.metrics.change_detection_tracker import CDTracker
-from torch_points3d.metrics.urb3DCD_tracker import Urb3DCDTracker
+from torch_points3d.metrics.Urb3DCD_tracker import Urb3DCDTracker
 
 
 import matplotlib.pyplot as plt
@@ -68,7 +69,6 @@ class AHN(Dataset):
 
     def __init__(self, filePaths="", split="train", DA=False, pre_transform=None, transform=None, preprocessed_dir="",
                  reload_preproc=False, reload_trees=False, ):
-        super(AHN, self).__init__(None, None, pre_transform)
         self.class_labels = OBJECT_LABEL
         self.ignore_label = IGNORE_LABEL
         self.preprocessed_dir = preprocessed_dir
@@ -91,21 +91,21 @@ class AHN(Dataset):
         if self.nb_elt_class.sum() == 0:
             self.get_nb_elt_class()
         self.weight_classes = 1 - self.nb_elt_class / self.nb_elt_class.sum()
+        super(AHN, self).__init__(None, None, pre_transform)
 
     def _get_paths(self):
         self.filesPC0 = []
         self.filesPC1 = []
-        globPath = os.scandir(self.filePaths)
-        for dir in globPath:
-            if dir.is_dir():
-                curDir = os.scandir(dir)
-                for f in curDir:
-                    if "AHN3" in f.name and "ply" in f.name and not "feature" in f.name:
-                        self.filesPC0.append(f.path)
-                    elif "AHN4" in f.name and "ply" in f.name and not "feature" in f.name:
-                        self.filesPC1.append(f.path)
-                curDir.close()
-        globPath.close()
+        files = glob.glob(self.filePaths + '/*.ply')
+        for f in files:
+            if "before" in f:
+                self.filesPC0.append(f)
+            elif "after" in f:
+                self.filesPC1.append(f)
+            #if "AHN3" in f and "ply" in f and not "feature" in f:
+            #    self.filesPC0.append(f)
+            #elif "AHN4" in f and "ply" in f and not "feature" in f:
+            #    self.filesPC1.append(f)
 
     def size(self):
         return len(self.filesPC0)
@@ -118,11 +118,13 @@ class AHN(Dataset):
                 self.nb_elt_class[c] += cpt[c]
 
     def hand_craft_process(self):
-        existfile = True
+        exist_file = True
         for idx in range(len(self.filesPC0)):
-            exist_file = existfile and osp.isfile(osp.join(self.preprocessed_dir, 'pc0_{}.pt'.format(idx)))
-            exist_file = existfile and osp.isfile(osp.join(self.preprocessed_dir, 'pc1_{}.pt'.format(idx)))
-        if not self.reload_preproc or not exist_file:
+            if (not osp.isfile(osp.join(self.preprocessed_dir, 'pc0_{}.pt'.format(idx)))):
+                exist_file = False
+            if (not osp.isfile(osp.join(self.preprocessed_dir, 'pc1_{}.pt'.format(idx)))):
+                exist_file = False
+        if self.reload_preproc or not exist_file:
             for idx in range(len(self.filesPC0)):
                 pc0, pc1, label = self.clouds_loader(idx, normalise=False)
                 pc0 = Data(pos=pc0)
@@ -266,6 +268,9 @@ class AHNSphere(AHN):
             return self._sample_per_epoch
         else:
             return self.grid_regular_centers.shape[0]
+
+    def len(self):
+        return self.__len__();
 
     def get(self, idx):
         if self._sample_per_epoch > 0:
@@ -677,13 +682,21 @@ def to_ply(pos, label, file):
 def read_from_ply(filename, nameInPly = "params"):
     """read XYZ for each vertex."""
     assert os.path.isfile(filename)
-    with open(filename, "rb") as f:
-        plydata = PlyData.read(f)
-        # num_verts = plydata["Urb3DSimul"].count
-        num_verts = plydata[nameInPly].count
-        vertices = np.zeros(shape=[num_verts, 4], dtype=np.float32)
-        vertices[:, 0] = plydata[nameInPly].data["x"]
-        vertices[:, 1] = plydata[nameInPly].data["y"]
-        vertices[:, 2] = plydata[nameInPly].data["z"]
-        vertices[:, 3] = plydata[nameInPly].data["label_ch"]
+    pcd = o3d.io.read_point_cloud(filename)
+    vertices = np.asarray(pcd.points, dtype=np.float32)
+    vertices = np.concatenate((vertices, np.zeros((vertices.shape[0], 1))), axis=1)
     return vertices
+
+#def read_from_ply(filename, nameInPly = "params"):
+#    """read XYZ for each vertex."""
+#    assert os.path.isfile(filename)
+#    with open(filename, "rb") as f:
+#        plydata = PlyData.read(f)
+#        # num_verts = plydata["Urb3DSimul"].count
+#        num_verts = plydata[nameInPly].count
+#        vertices = np.zeros(shape=[num_verts, 4], dtype=np.float32)
+#        vertices[:, 0] = plydata[nameInPly].data["x"]
+#        vertices[:, 1] = plydata[nameInPly].data["y"]
+#        vertices[:, 2] = plydata[nameInPly].data["z"]
+#        vertices[:, 3] = plydata[nameInPly].data["label_ch"]
+#    return vertices

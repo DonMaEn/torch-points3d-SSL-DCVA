@@ -4,7 +4,9 @@ data:
   task: change_detection
 #  dataTrainFile: /gpfswork/rech/rin/utf14pr/dataset/AHN/DS_4Classes_Divided2_forRF/Train-tiny/ #/gpfswork/rech/rin/utf14pr/dataset/AHN/DS_4Classes_new_Divided/
 #  dataValFile: /gpfswork/rech/rin/utf14pr/dataset/AHN/DS_4Classes_Divided2_forRF/Val/ #/share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Val/ #
-  dataTestFile: /share/projects/deep3dt/datasets/AHN/CleanManually/ #37EN1_08_full/ #CleanManually/ #/share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Test/ #
+#  dataTestFile: /share/projects/deep3dt/datasets/AHN/CleanManually/ #37EN1_08_full/ #CleanManually/ #/share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Test/ #
+#dataTestFile: /mnt/data/val/tiled/tile_0
+  dataTestFile: /mnt/data/val/sttc
   dataroot: data
   preprocessed_dir: /share/home/degelis/dev/torch-points3d/data/${data.dataset_name}/
   first_subsampling: 0.5  # Grid size of the input data

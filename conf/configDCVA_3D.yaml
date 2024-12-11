@@ -19,6 +19,7 @@ defaults: # for loading the default config
 
 perform_annex_task: False
 compute_thresholds: True
+#compute_thresholds: False
 nb_thresholds: 1
 
 

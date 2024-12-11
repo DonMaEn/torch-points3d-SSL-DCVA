@@ -2,9 +2,11 @@ data:
   class: AHN_3DCDContrastive.AHNDataset_contrastive
   dataset_name: "AHN"
   task: change_detection
-  dataTrainFile: /share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Train/ #/gpfswork/rech/rin/utf14pr/dataset/AHN/DS_4Classes_new_Divided/
+  dataTrainFile: /mnt/data/train/
+#dataTrainFile: /share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Train/ #/gpfswork/rech/rin/utf14pr/dataset/AHN/DS_4Classes_new_Divided/
 #  dataValFile:
-  dataTestFile: /share/projects/deep3dt/datasets/AHN/CleanManually/ #/share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Test/ #
+#dataTestFile: /share/projects/deep3dt/datasets/AHN/CleanManually/ #/share/projects/deep3dt/datasets/AHN/DS_4Classes_new_Divided/Test/ #
+  dataTestFile: /mnt/data/val/
   dataroot: data
   preprocessed_dir: /share/home/degelis/dev/torch-points3d/data/${data.dataset_name}/AHNClean/ #/gpfswork/rech/rin/utf14pr/
   first_subsampling: 0.5 #0.05 # Grid size of the input data

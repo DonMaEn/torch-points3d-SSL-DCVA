@@ -162,7 +162,7 @@ class DCVA:
             print('Threshold computation')
             self.compute_thresholds()
         else:
-            self.thresholds = [0.46849772]#[4.7891507]#[5.2416525]
+            self.thresholds = [5.0] #[0.46849772]#[4.7891507]#[5.2416525]
         self.labels = [0, 1]
         log.info("Thresholds that will be used to segment PCs:" + str(self.thresholds))
         self.get_DCVA_labels()
