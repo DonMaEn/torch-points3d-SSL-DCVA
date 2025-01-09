@@ -1065,20 +1065,22 @@ class IrregularSampling(object):
         self.skip_keys = skip_keys
         self.grid_sampling = GridSampling3D(grid_size_center, mode="last")
 
-    def __call__(self, data):
+    def __call__(self, data, center=None):
 
-        data_temp = self.grid_sampling(data.clone())
-        i = torch.randint(0, len(data_temp.pos), (1,))
-        center = data_temp.pos[i]
+        if center is None:
+            data_temp = self.grid_sampling(data.clone())
+            i = torch.randint(0, len(data_temp.pos), (1,))
+            center = data_temp.pos[i]
+        _data = data.clone()
 
-        d_p = (torch.abs(data.pos - center) ** self.p).sum(1)
+        d_p = (torch.abs(_data.pos - center) ** self.p).sum(1)
 
         sigma_2 = (self.d_half ** self.p) / (2 * np.log(2))
         thresh = torch.exp(-d_p / (2 * sigma_2))
 
-        mask = torch.rand(len(data.pos)) < thresh
-        data = apply_mask(data, mask, self.skip_keys)
-        return data
+        mask = torch.rand(len(_data.pos)) < thresh
+        _data = apply_mask(_data, mask, self.skip_keys)
+        return _data
 
     def __repr__(self):
         return "{}(d_half={}, p={}, skip_keys={})".format(self.__class__.__name__, self.d_half, self.p, self.skip_keys)

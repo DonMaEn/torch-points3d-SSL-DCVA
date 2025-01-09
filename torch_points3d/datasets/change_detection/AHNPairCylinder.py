@@ -23,7 +23,7 @@ import gdown
 import shutil
 import laspy
 
-from torch_points3d.core.data_transform import GridSampling3D, CylinderSampling, SphereSampling
+from torch_points3d.core.data_transform import GridSampling3D, CylinderSampling, SphereSampling, IrregularSampling
 from torch_points3d.datasets.change_detection.base_siamese_dataset import BaseSiameseDataset
 from torch_points3d.datasets.change_detection.pair import Pair, MultiScalePair
 from torch_points3d.metrics.change_detection_tracker import CDTracker
@@ -437,6 +437,10 @@ class AHNCylinder(AHNSphere):
                 setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
                 dataPC0_cyl = cylinder_sampler(dataPC0)
                 dataPC1_cyl = cylinder_sampler(dataPC1)
+                # un-comment to use irregular sampling
+                #irregular_sampler = IrregularSampling(d_half=10, p=1)
+                #dataPC0_cyl = irregular_sampler(dataPC0_cyl, centre)
+                #dataPC1_cyl = irregular_sampler(dataPC1_cyl, centre)
                 pair_cylinders = Pair(pos=dataPC0_cyl.pos, pos_target=dataPC1_cyl.pos, y=dataPC1_cyl.y,
                                       idx=dataPC0_cyl.idx, idx_target=dataPC1_cyl.idx, area=area_sel)
                 pair_cylinders.normalise()
@@ -456,6 +460,10 @@ class AHNCylinder(AHNSphere):
                 setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
                 dataPC0_cyl = cylinder_sampler(dataPC0)
                 dataPC1_cyl = cylinder_sampler(dataPC1)
+                # un-comment to use irregular sampling
+                #irregular_sampler = IrregularSampling(d_half=10, p=1)
+                #dataPC0_cyl = irregular_sampler(dataPC0_cyl, centre)
+                #dataPC1_cyl = irregular_sampler(dataPC1_cyl, centre)
                 pair_cylinders = Pair(pos=dataPC0_cyl.pos, pos_target=dataPC1_cyl.pos, y=dataPC1_cyl.y,
                                       idx=dataPC0_cyl.idx, idx_target=dataPC1_cyl.idx, area=area_sel)
                 try:
@@ -489,6 +497,10 @@ class AHNCylinder(AHNSphere):
         setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
         dataPC0_cyl = cylinder_sampler(dataPC0)
         dataPC1_cyl = cylinder_sampler(dataPC1)
+        # un-comment to use irregular sampling
+        #irregular_sampler = IrregularSampling(d_half=10, p=1)
+        #dataPC0_cyl = irregular_sampler(dataPC0_cyl, centre[:3])
+        #dataPC1_cyl = irregular_sampler(dataPC1_cyl, centre[:3])
         pair_cyl = Pair(pos=dataPC0_cyl.pos, pos_target=dataPC1_cyl.pos, y=dataPC1_cyl.y)
         if self.DA:
             pair_cyl.data_augment()

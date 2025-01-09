@@ -6,7 +6,7 @@ import os
 from plyfile import PlyData, PlyElement
 from torch_geometric.data import Data, extract_zip, Dataset
 
-from torch_points3d.core.data_transform import GridSampling3D, CylinderSampling, SphereSampling
+from torch_points3d.core.data_transform import GridSampling3D, CylinderSampling, SphereSampling, IrregularSampling
 from torch_points3d.datasets.change_detection.Urb3DSimulPairCylinder import to_ply
 from torch_points3d.datasets.change_detection.AHNPairCylinder import AHNCylinder
 from torch_points3d.datasets.change_detection.base_siamese_dataset import BaseSiameseDataset
@@ -64,6 +64,10 @@ class AHNCylinder_Contrastive(AHNCylinder):
                 setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
                 dataPC0_cyl = cylinder_sampler(dataPC0)
                 dataPC1_cyl = cylinder_sampler(dataPC1)
+                # un-comment to use irregular sampling
+                #irregular_sampler = IrregularSampling(d_half=10, p=1)
+                #dataPC0_cyl = irregular_sampler(dataPC0_cyl, centre)
+                #dataPC1_cyl = irregular_sampler(dataPC1_cyl, centre)
                 try:
                     if self.manual_transform is not None:
                         dataPC0_cyl = self.manual_transform(dataPC0_cyl)
@@ -82,6 +86,10 @@ class AHNCylinder_Contrastive(AHNCylinder):
                     setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
                     dataPC0_cyl_s = cylinder_sampler(dataPC0_s)
                     dataPC1_cyl_s = cylinder_sampler(dataPC1_s)
+                    # un-comment to use irregular sampling
+                    #irregular_sampler = IrregularSampling(d_half=10, p=1)
+                    #dataPC0_cyl_s = irregular_sampler(dataPC0_cyl_s, centre_shuffled)
+                    #dataPC1_cyl_s = irregular_sampler(dataPC1_cyl_s, centre_shuffled)
                     if self.manual_transform is not None:
                         dataPC0_cyl_s = self.manual_transform(dataPC0_cyl_s)
                         dataPC1_cyl_s = self.manual_transform(dataPC1_cyl_s)
@@ -112,6 +120,19 @@ class AHNCylinder_Contrastive(AHNCylinder):
             setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
             dataPC0_cyl = cylinder_sampler(dataPC0)
             dataPC1_cyl = cylinder_sampler(dataPC1)
+            # un-comment to use irregular sampling
+            #irregular_sampler = IrregularSampling(d_half=10, p=1)
+            #dataPC0_cyl = irregular_sampler(dataPC0_cyl, centre[0:3])
+            #dataPC1_cyl = irregular_sampler(dataPC1_cyl, centre[0:3])
+
+            # DEBUG visualization
+            #import open3d as o3d
+            #pcd = o3d.geometry.PointCloud()
+            #pcd.points = o3d.utility.Vector3dVector(dataPC0_cyl.pos.numpy())
+            #o3d.io.write_point_cloud('test_cylinder_0.ply', pcd)
+            #pcd.points = o3d.utility.Vector3dVector(dataPC1_cyl.pos.numpy())
+            #o3d.io.write_point_cloud('test_cylinder_1.ply', pcd)
+            #exit()
             try:
                 if self.manual_transform is not None:
                     dataPC0_cyl = self.manual_transform(dataPC0_cyl)
@@ -137,6 +158,10 @@ class AHNCylinder_Contrastive(AHNCylinder):
             setattr(dataPC1, CylinderSampling.KDTREE_KEY, pair.KDTREE_KEY_PC1)
             dataPC0_cyl = cylinder_sampler(dataPC0)
             dataPC1_cyl = cylinder_sampler(dataPC1)
+            # un-comment to use irregular sampling
+            #irregular_sampler = IrregularSampling()
+            #dataPC0_cyl = irregular_sampler(dataPC0_cyl)
+            #dataPC1_cyl = irregular_sampler(dataPC1_cyl)
             try:
                 if self.manual_transform is not None:
                     dataPC0_cyl = self.manual_transform(dataPC0_cyl)
