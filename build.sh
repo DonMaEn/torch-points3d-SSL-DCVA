@@ -7,7 +7,7 @@ set -e
 podmandir=$(dirname $(realpath ${0}))
 
 # tag the podman with 'latest'
-tag=ut/torchpoints3d_2:latest
+tag=ut/torchpoints3d:latest
 echo building ${tag}
 podman build \
     --tag="${tag}" \
